@@ -1,0 +1,24 @@
+# Set your ssh pub key here if you want to ssh into the nodes
+authorized_keys = [
+  "ssh-rsa THISISNOTAKEY"
+]
+
+# Remote image
+#image_uri = "https://URL_HERE/QCOW2IMAGEHERE"
+# Local image (recommended!)
+image_uri = "./LOCALQCOW2IMAGE"
+
+# Add extra repositories
+repositories = {
+    "REPONAME": "REPOURL"
+}
+
+# Add ntp servers
+ntp_servers = [
+    "pool.ntp.org",
+]
+
+# Add extra packages
+packages = [
+    vim
+]
