@@ -38,5 +38,4 @@ jobs:
     # Validates the Terraform configuration files
     - name: Terraform Validate
       run: |
-        terraform init
-        terraform validate
+        terraform init && terraform validate
