@@ -13,12 +13,25 @@ jobs:
 
     # Checkout the repository to the GitHub Actions runner
     steps:
+    - name: Add debian repository
+      uses: myci-actions/add-deb-repo@3
+      with:
+        repo: http://download.opensuse.org/repositories/systemsmanagement:/terraform/Ubuntu_20.04/
+        repo-name: systemsmanagement
+
+    - name: Install libvirt provider for terraform
+      run: |
+        apt-get update -qq
+        apt-get install terraform-provider-libvirt
+        
     - name: Checkout
       uses: actions/checkout@v2
 
     # Install the latest version of Terraform CLI
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.13.4
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
