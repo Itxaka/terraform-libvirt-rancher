@@ -9,19 +9,13 @@ timezone: "Etc/UTC"
 ssh_authorized_keys:
 ${authorized_keys}
 
-ntp:
-  enabled: true
-  ntp_client: chrony
-  config:
-    confpath: /etc/chrony.conf
-  servers:
-${ntp_servers}
+${ntp}
 
 zypper:
   repos:
 ${repositories}
   config:
-    gpgcheck: "off"
+    gpgCheck: "off"
     solver.onlyRequires: "true"
     download.use_deltarpm: "true"
 

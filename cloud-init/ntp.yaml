@@ -1,0 +1,7 @@
+ntp:
+  enabled: true
+  ntp_client: chrony
+  config:
+    confpath: /etc/chrony.conf
+  servers:
+${ntp_servers}

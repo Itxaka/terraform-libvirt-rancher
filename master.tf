@@ -12,13 +12,21 @@ data "template_file" "commands" {
   template = file("cloud-init/commands.yaml")
 }
 
+data "template_file" "ntp" {
+  count = length(var.ntp_servers) > 0 ? 1 : 0
+  template = file("cloud-init/ntp.yaml")
+  vars = {
+    ntp_servers = join("\n", formatlist("    - %s", var.ntp_servers))
+  }
+}
+
 data "template_file" "master-cloud-init" {
   template = file("cloud-init/cloud_init.yaml")
 
   vars = {
     authorized_keys = join("\n", formatlist("  - %s", var.authorized_keys))
     repositories = join("\n", data.template_file.repositories.*.rendered)
-    ntp_servers = join("\n", formatlist("    - %s", var.ntp_servers))
+    ntp = length(data.template_file.ntp) > 0 ? join("\n", data.template_file.ntp.*.rendered) : ""
     packages = join("\n", formatlist("    - %s", var.packages))
     commands = join("\n", data.template_file.commands.*.rendered)
     username = var.username

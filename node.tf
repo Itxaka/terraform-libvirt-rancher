@@ -12,6 +12,14 @@ data "template_file" "node_commands" {
   template = file("cloud-init/commands.yaml")
 }
 
+data "template_file" "node_ntp" {
+  count = length(var.ntp_servers) > 0 ? 1 : 0
+  template = file("cloud-init/ntp.yaml")
+  vars = {
+    ntp_servers = join("\n", formatlist("    - %s", var.ntp_servers))
+  }
+}
+
 data "template_file" "node-cloud-init" {
   template = file("cloud-init/cloud_init.yaml")
   count    = var.num_nodes
@@ -19,7 +27,7 @@ data "template_file" "node-cloud-init" {
   vars = {
     authorized_keys = join("\n", formatlist("  - %s", var.authorized_keys))
     repositories = join("\n", data.template_file.node_repositories.*.rendered)
-    ntp_servers = join("\n", formatlist("    - %s", var.ntp_servers))
+    ntp = length(data.template_file.ntp) > 0 ? join("\n", data.template_file.node_ntp.*.rendered) : ""
     packages = join("\n", formatlist("    - %s", var.packages))
     commands = join("\n", data.template_file.node_commands.*.rendered)
     username = var.username
