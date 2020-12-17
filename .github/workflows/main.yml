@@ -15,8 +15,8 @@ jobs:
     steps:
     - name: Install libvirt provider for terraform
       run: |
-        echo 'deb http://download.opensuse.org/repositories/systemsmanagement:/terraform/Ubuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/systemsmanagement:terraform.list
-        curl -fsSL https://download.opensuse.org/repositories/systemsmanagement:terraform/Ubuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/systemsmanagement_terraform.gpg > /dev/null
+        echo 'deb http://download.opensuse.org/repositories/systemsmanagement:/terraform:/unstable/Ubuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/systemsmanagement:terraform:unstable.list
+        curl -fsSL https://download.opensuse.org/repositories/systemsmanagement:terraform:unstable/Ubuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/systemsmanagement_terraform_unstable.gpg > /dev/null      
         sudo apt update -qq
         sudo apt install terraform-provider-libvirt
         
