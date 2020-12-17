@@ -13,13 +13,6 @@ jobs:
 
     # Checkout the repository to the GitHub Actions runner
     steps:
-    - name: Install libvirt provider for terraform
-      run: |
-        echo 'deb http://download.opensuse.org/repositories/systemsmanagement:/terraform:/unstable/Ubuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/systemsmanagement:terraform:unstable.list
-        curl -fsSL https://download.opensuse.org/repositories/systemsmanagement:terraform:unstable/Ubuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/systemsmanagement_terraform_unstable.gpg > /dev/null      
-        sudo apt update -qq
-        sudo apt install terraform-provider-libvirt
-        
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -29,6 +22,11 @@ jobs:
       with:
         terraform_version: 0.13.4
 
+    - name: Install libvirt provider for terraform
+      run: |
+        wget https://github.com/dmacvicar/terraform-provider-libvirt/releases/download/v0.6.3/terraform-provider-libvirt-0.6.3+git.1604843676.67f4f2aa.Ubuntu_20.04.amd64.tar.gz -O - | tar -xz
+        mkdir -p ~/.local/share/terraform/plugins/registry.terraform.io/dmacvicar/libvirt/0.6.3/linux_amd64
+        mv terraform-provider-libvirt ~/.local/share/terraform/plugins/registry.terraform.io/dmacvicar/libvirt/0.6.3/linux_amd64
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
