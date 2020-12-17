@@ -1,6 +1,6 @@
 resource "libvirt_network" "network" {
-  name   = var.network_name
-  mode   = var.network_mode
+  name = var.network_name
+  mode = var.network_mode
 
   //noinspection HCLUnknownBlockType
   dns {
