@@ -16,13 +16,11 @@ jobs:
     - name: Add debian repository
       uses: myci-actions/add-deb-repo@3
       with:
-        repo: http://download.opensuse.org/repositories/systemsmanagement:/terraform/Ubuntu_20.04/
+        repo: deb http://download.opensuse.org/repositories/systemsmanagement:/terraform/Ubuntu_20.04/ /
         repo-name: systemsmanagement
 
     - name: Install libvirt provider for terraform
-      run: |
-        apt-get update -qq
-        apt-get install terraform-provider-libvirt
+      run: sudo apt-get install terraform-provider-libvirt
         
     - name: Checkout
       uses: actions/checkout@v2
