@@ -16,8 +16,9 @@ jobs:
     - name: Install libvirt provider for terraform
       run: |
         echo 'deb http://download.opensuse.org/repositories/systemsmanagement:/terraform/Ubuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/systemsmanagement:terraform.list
-        sudo apt-get update -qq
-        sudo apt-get install terraform-provider-libvirt
+        curl -fsSL https://download.opensuse.org/repositories/systemsmanagement:terraform/Ubuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/systemsmanagement_terraform.gpg > /dev/null
+        sudo apt update -qq
+        sudo apt install terraform-provider-libvirt
         
     - name: Checkout
       uses: actions/checkout@v2
