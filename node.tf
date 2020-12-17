@@ -1,9 +1,9 @@
 data "template_file" "node_repositories" {
   template = file("cloud-init/repository.yaml")
-  count = length(var.repositories)
+  count    = length(var.repositories)
 
   vars = {
-    repository_url = element(values(var.repositories), count.index)
+    repository_url  = element(values(var.repositories), count.index)
     repository_name = element(keys(var.repositories), count.index)
   }
 }
@@ -13,7 +13,7 @@ data "template_file" "node_commands" {
 }
 
 data "template_file" "node_ntp" {
-  count = length(var.ntp_servers) > 0 ? 1 : 0
+  count    = length(var.ntp_servers) > 0 ? 1 : 0
   template = file("cloud-init/ntp.yaml")
   vars = {
     ntp_servers = join("\n", formatlist("    - %s", var.ntp_servers))
@@ -26,36 +26,36 @@ data "template_file" "node-cloud-init" {
 
   vars = {
     authorized_keys = join("\n", formatlist("  - %s", var.authorized_keys))
-    repositories = join("\n", data.template_file.node_repositories.*.rendered)
-    ntp = length(data.template_file.ntp) > 0 ? join("\n", data.template_file.node_ntp.*.rendered) : ""
-    packages = join("\n", formatlist("    - %s", var.packages))
-    commands = join("\n", data.template_file.node_commands.*.rendered)
-    username = var.username
-    hostname = format("node-%02g", count.index)
+    repositories    = join("\n", data.template_file.node_repositories.*.rendered)
+    ntp             = length(data.template_file.ntp) > 0 ? join("\n", data.template_file.node_ntp.*.rendered) : ""
+    packages        = join("\n", formatlist("    - %s", var.packages))
+    commands        = join("\n", data.template_file.node_commands.*.rendered)
+    username        = var.username
+    hostname        = format("node-%02g", count.index)
   }
 }
 
 resource "libvirt_volume" "node" {
-  count = var.num_nodes
-  name = "node-${format("%02g", count.index)}-volume"
-  pool = var.pool
-  size = var.node_disk_size
+  count          = var.num_nodes
+  name           = "node-${format("%02g", count.index)}-volume"
+  pool           = var.pool
+  size           = var.node_disk_size
   base_volume_id = libvirt_volume.img.id
 }
 
 resource "libvirt_cloudinit_disk" "node" {
-  count = var.num_nodes
-  name = "node-cloudinit-disk-${count.index}"
-  pool = var.pool
+  count     = var.num_nodes
+  name      = "node-cloudinit-disk-${count.index}"
+  pool      = var.pool
   user_data = data.template_file.node-cloud-init[count.index].rendered
 }
 
 
 resource "libvirt_domain" "node" {
-  count = var.num_nodes
-  name = format("node-%02g", count.index)
-  memory = var.node_memory
-  vcpu = var.node_vcpu
+  count     = var.num_nodes
+  name      = format("node-%02g", count.index)
+  memory    = var.node_memory
+  vcpu      = var.node_vcpu
   cloudinit = element(libvirt_cloudinit_disk.node.*.id, count.index)
 
   cpu = {
@@ -69,15 +69,15 @@ resource "libvirt_domain" "node" {
 
   //noinspection HCLUnknownBlockType
   network_interface {
-    network_name = var.network_name
-    network_id = libvirt_network.network.id
-    hostname = format("node-%02g", count.index)
+    network_name   = var.network_name
+    network_id     = libvirt_network.network.id
+    hostname       = format("node-%02g", count.index)
     wait_for_lease = true
   }
 
   //noinspection HCLUnknownBlockType
   graphics {
-    type = "vnc"
+    type        = "vnc"
     listen_type = "address"
   }
 }
@@ -85,7 +85,7 @@ resource "libvirt_domain" "node" {
 resource "null_resource" "node_wait_cloudinit" {
   count = var.num_nodes
   depends_on = [
-    libvirt_domain.node]
+  libvirt_domain.node]
 
   connection {
     //noinspection HILUnresolvedReference
@@ -103,7 +103,7 @@ resource "null_resource" "node_wait_cloudinit" {
 
 resource "null_resource" "configure_rancher_node" {
   depends_on = [null_resource.master_wait_cloudinit]
-  count = var.num_nodes
+  count      = var.num_nodes
   connection {
     //noinspection HILUnresolvedReference
     host = element(libvirt_domain.node.*.network_interface.0.addresses.0, count.index)
@@ -112,7 +112,7 @@ resource "null_resource" "configure_rancher_node" {
   }
 
   provisioner "file" {
-    source = "configure_rancher_node.sh"
+    source      = "configure_rancher_node.sh"
     destination = "/tmp/script.sh"
   }
 
